@@ -1,0 +1,23 @@
+{
+  "name": "kadr-film-community",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Лабораторная 0: каталог фильмов и стены с рецензиями",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env backend/src/server.js",
+    "dev": "node --watch --env-file-if-exists=.env backend/src/server.js",
+    "test": "node --env-file-if-exists=.env --test backend/test/*.test.js",
+    "check": "node --check backend/src/app.js && node --check backend/src/server.js && node --check frontend/app.js"
+  },
+  "dependencies": {
+    "cookie-parser": "1.4.7",
+    "express": "5.2.1",
+    "express-rate-limit": "8.7.0",
+    "helmet": "8.3.0",
+    "pg": "8.23.1"
+  }
+}

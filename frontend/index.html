@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f5ef">
+  <meta name="description" content="Кадр — место для фильмов, цитат и ваших впечатлений. Соберите личную историю кино.">
+  <title>Кадр — кино остаётся с тобой</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">К содержимому</a>
+  <header class="header">
+    <a class="brand" href="#home" aria-label="Кадр — главная"><span class="brand-mark" aria-hidden="true">к.</span>кадр<span class="brand-dot">/</span></a>
+    <nav aria-label="Главная навигация">
+      <a href="#home" data-nav="home">Каталог</a>
+      <a href="#feed" data-nav="feed">Ревью</a>
+      <a href="#wall" data-nav="wall">Моя стена</a>
+    </nav>
+    <div id="account"></div>
+  </header>
+  <main id="main" tabindex="-1"></main>
+  <footer><a class="brand footer-brand" href="#home">кадр/</a><span>Хорошее кино заканчивается. Разговор о нём — нет.</span><span>Сделано для тех, кто смотрит.</span></footer>
+  <dialog id="modal" aria-labelledby="modal-title"><button class="close-dialog" aria-label="Закрыть окно">×</button><div id="modal-content"></div></dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <noscript>Для работы каталога и публикации отзывов включите JavaScript.</noscript>
+</body>
+</html>

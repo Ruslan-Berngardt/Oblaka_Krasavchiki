@@ -1,0 +1,47 @@
+name: Check application
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: kadr
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: kadr_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U kadr -d kadr_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgresql://kadr:test_password@localhost:5432/kadr_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm test
+      - run: docker compose config --quiet
+      - run: docker compose build
+      - name: Start all three services
+        run: docker compose up -d --wait
+        env:
+          POSTGRES_PORT: 5433
+      - name: Check frontend and API through nginx
+        run: |
+          curl --fail http://localhost:8080/ -o /dev/null
+          curl --fail http://localhost:8080/api/health
+      - name: Compose logs on failure
+        if: failure()
+        run: docker compose logs
+      - name: Stop services
+        if: always()
+        run: docker compose down -v
+        env:
+          POSTGRES_PORT: 5433
