@@ -1,10 +1,13 @@
-name: Check application
+name: Lab0 — Check application
 on: [push, pull_request]
 permissions:
   contents: read
 jobs:
   test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Lab0
     services:
       postgres:
         image: postgres:17-alpine
@@ -24,6 +27,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: Lab0/package-lock.json
       - run: npm ci
       - run: npm run check
       - run: npm test
