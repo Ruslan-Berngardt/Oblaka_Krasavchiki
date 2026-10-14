@@ -1,25 +1,21 @@
-# Облака — лабораторные работы
+# Облака — лабораторные работы (DevOps, 2 курс)
 
-Репозиторий команды **Oblaka_Krasavchiki**.
+Репозиторий команды Oblaka_Krasavchiki.
 
-| Работа | Содержание | Инструкция |
+| Работа | Описание | Инструкция |
 |---|---|---|
-| [Lab0](Lab0/) | «Кадр»: каталог фильмов, личные стены с ревью, бэкенд и PostgreSQL | [Запуск и проверка](Lab0/README.md) |
+| [Lab0](Lab0/) | Свой сервис «Кадр»: каталог фильмов, личные стены, бэкенд и PostgreSQL | [README](Lab0/README.md) |
 
-## Запуск лабораторной 0
+## Быстрый запуск Лабы 0
 
-При установленном и запущенном Docker Desktop:
+Нужны Node.js 22.9+ и запущенный PostgreSQL 17 с пользователем и базой `kadr`. Подробности в [Lab0/README.md](Lab0/README.md).
 
 ```bash
 git clone https://github.com/Ruslan-Berngardt/Oblaka_Krasavchiki.git
 cd Oblaka_Krasavchiki/Lab0
-docker compose up --build -d
+cp .env.example .env
+npm ci
+npm start
 ```
 
-Откройте **http://localhost:8080**. Если репозиторий уже скачан, перейдите в его папку `Lab0` и выполните последнюю команду.
-
-[Как взаимодействуют фронтенд, бэкенд и база](Lab0/docs/architecture.md) · [Материал для защиты](Lab0/docs/defense.md) · [Описание API](Lab0/docs/api.md)
-
-Исходники, Dockerfile, Compose, тесты и скриншоты лабораторной находятся внутри `Lab0`. Автоматическая проверка GitHub Actions хранится в `.github/workflows/ci.yml` в корне репозитория и запускает команды внутри `Lab0`.
-
-Если запускали прежнюю версию из корня, перед переходом прочитайте [замечание о сохранении прежней базы](Lab0/README.md#структура-репозитория-после-переноса).
+Приложение откроется на http://localhost:3000.
