@@ -56,24 +56,48 @@ pg_isready
 
 ### 3. Создать пользователя и базу данных
 
+Подключитесь к PostgreSQL под пользователем с правами создания ролей и баз данных:
+
 ```bash
-psql postgres -c "CREATE USER kadr WITH PASSWORD 'kadr_local_password';"
-psql postgres -c "CREATE DATABASE kadr OWNER kadr;"
+psql -U POSTGRES_ADMIN -d postgres
 ```
 
-В Linux может понадобиться `sudo -u postgres psql`, в Windows — SQL Shell (psql) или pgAdmin.
+Замените `POSTGRES_ADMIN` на имя вашего администратора PostgreSQL.
+
+В открывшейся консоли выполните:
+
+```sql
+CREATE USER app_user;
+\password app_user
+CREATE DATABASE app_db OWNER app_user;
+```
+
+Команда `\password` предложит задать пароль интерактивно. Выберите собственный пароль.
+
+`app_user` и `app_db` — условные имена пользователя приложения и базы. Их можно заменить своими.
+
+Для выхода выполните:
+
+```text
+\q
+```
 
 ### 4. Настроить подключение
 
-```bash
-cp .env.example .env
+Скопируйте `.env.example` в `.env` и укажите свои данные:
+
+```text
+DATABASE_URL=postgresql://DB_USER:DB_PASSWORD@DB_HOST:DB_PORT/DB_NAME
 ```
 
-По умолчанию в `.env` указано:
-```
-DATABASE_URL=postgresql://kadr:kadr_local_password@localhost:5432/kadr
-```
-Если вы использовали другие имя, пароль или порт, измените `DATABASE_URL`. В PowerShell вместо `cp` используйте `Copy-Item .env.example .env`.
+Замените:
+- `DB_USER` — пользователь приложения;
+- `DB_PASSWORD` — заданный пароль;
+- `DB_HOST` — адрес PostgreSQL, для локального запуска `localhost`;
+- `DB_PORT` — порт PostgreSQL, обычно `5432`;
+- `DB_NAME` — созданная база данных.
+
+Реальные данные подключения храните в локальном `.env`, исключённом из Git.
 
 ### 5. Установить зависимости и запустить
 
