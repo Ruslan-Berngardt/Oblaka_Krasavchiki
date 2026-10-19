@@ -1,4 +1,4 @@
-name: kadr
+name: kadr-lab0
 services:
   db:
     image: postgres:17-alpine
