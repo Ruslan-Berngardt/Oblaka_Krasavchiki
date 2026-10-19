@@ -1,0 +1,37 @@
+name: Docker launch check
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Lab0
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check source syntax and create local Docker settings
+        run: |
+          npm run check
+          sh scripts/setup-docker-env.sh
+          docker compose --env-file .env.docker config --quiet
+      - name: Build and start three services
+        run: docker compose --env-file .env.docker up --build -d --wait
+      - name: Check publication through nginx
+        run: node scripts/smoke.mjs create "$RUNNER_TEMP/kadr-smoke.json"
+      - name: Recreate containers while preserving the database volume
+        run: docker compose --env-file .env.docker up -d --force-recreate --wait
+      - name: Verify data and session persisted
+        run: node scripts/smoke.mjs verify "$RUNNER_TEMP/kadr-smoke.json"
+      - name: Show logs on failure
+        if: failure()
+        run: docker compose --env-file .env.docker logs --tail=100
+      - name: Remove disposable CI stack
+        if: always()
+        run: |
+          if [ -f .env.docker ]; then
+            docker compose --env-file .env.docker down -v
+          fi
