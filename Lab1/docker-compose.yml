@@ -1,0 +1,80 @@
+name: kadr-lab1
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: kadr
+      POSTGRES_DB: kadr
+      POSTGRES_PASSWORD: lab1pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks: [database]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kadr -d kadr"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+
+  backend-1:
+    build:
+      context: ../Lab0
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql://kadr:lab1pass@db:5432/kadr
+      PORT: 3000
+      COOKIE_SECURE: "false"
+      INSTANCE_ID: "instance-1"
+    networks: [application, database]
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  backend-2:
+    build:
+      context: ../Lab0
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql://kadr:lab1pass@db:5432/kadr
+      PORT: 3000
+      COOKIE_SECURE: "false"
+      INSTANCE_ID: "instance-2"
+    networks: [application, database]
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "127.0.0.1:80:80"
+      - "127.0.0.1:443:443"
+    env_file:
+      - .env
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/entrypoint.sh:/entrypoint.sh:ro
+      - ./frontend:/var/www/frontend:ro
+      - ./docs:/var/www/docs:ro
+      - ./second-site:/var/www/second-site:ro
+      - ./error-pages:/var/www/error-pages:ro
+      - certs:/etc/nginx/certs
+    entrypoint: ["/entrypoint.sh"]
+    command: ["nginx", "-g", "daemon off;"]
+    networks: [application]
+    depends_on:
+      - backend-1
+      - backend-2
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  certs:
+
+networks:
+  application:
+  database:
+    internal: true
