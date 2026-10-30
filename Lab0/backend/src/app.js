@@ -23,6 +23,11 @@ const reviewSelect = `SELECT r.*, u.name AS author, m.title AS movie_title, m.ye
 
 export function createApp(pool) {
   const app = express();
+const instanceId = process.env.INSTANCE_ID || 'unknown';
+  app.use((req, res, next) => {
+    res.setHeader('X-Backend-Instance', instanceId);
+    next();
+  });
   app.disable('x-powered-by');
   app.use(helmet({ contentSecurityPolicy: { directives: {
     defaultSrc: ["'self'"], scriptSrc: ["'self'"], styleSrc: ["'self'"],
