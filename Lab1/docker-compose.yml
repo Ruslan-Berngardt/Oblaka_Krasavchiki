@@ -52,18 +52,14 @@ services:
     ports:
       - "127.0.0.1:80:80"
       - "127.0.0.1:443:443"
-    env_file:
-      - .env
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/entrypoint.sh:/entrypoint.sh:ro
+      - ./nginx/.htpasswd:/etc/nginx/.htpasswd:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
       - ./frontend:/var/www/frontend:ro
       - ./docs:/var/www/docs:ro
       - ./second-site:/var/www/second-site:ro
       - ./error-pages:/var/www/error-pages:ro
-      - certs:/etc/nginx/certs
-    entrypoint: ["/entrypoint.sh"]
-    command: ["nginx", "-g", "daemon off;"]
     networks: [application]
     depends_on:
       - backend-1
