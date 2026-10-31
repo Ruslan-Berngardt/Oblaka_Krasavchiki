@@ -48,13 +48,14 @@ services:
     restart: unless-stopped
 
   nginx:
-    image: nginx:alpine
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
     ports:
       - "127.0.0.1:80:80"
       - "127.0.0.1:443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/.htpasswd:/etc/nginx/.htpasswd:ro
       - ./nginx/certs:/etc/nginx/certs:ro
       - ./frontend:/var/www/frontend:ro
       - ./docs:/var/www/docs:ro
