@@ -23,6 +23,11 @@ const reviewSelect = `SELECT r.*, u.name AS author, m.title AS movie_title, m.ye
 
 export function createApp(pool) {
   const app = express();
+const instanceId = process.env.INSTANCE_ID || 'unknown';
+  app.use((req, res, next) => {
+    res.setHeader('X-Backend-Instance', instanceId);
+    next();
+  });
   app.disable('x-powered-by');
   app.use(helmet({ contentSecurityPolicy: { directives: {
     defaultSrc: ["'self'"], scriptSrc: ["'self'"], styleSrc: ["'self'"],
@@ -30,6 +35,27 @@ export function createApp(pool) {
   } } }));
   app.use(express.json({ limit: '32kb' }));
   app.use(cookieParser());
+app.use('/admin', (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Basic ')) {
+    res.setHeader('WWW-Authenticate', 'Basic realm="Admin Area"');
+    return res.status(401).send('Authentication required.');
+  }
+  const base64Credentials = authHeader.split(' ')[1];
+  const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii');
+  const [username, password] = credentials.split(':');
+  
+  if (username === 'admin' && password === 'admin123') {
+    next();
+  } else {
+    res.setHeader('WWW-Authenticate', 'Basic realm="Admin Area"');
+    return res.status(401).send('Invalid credentials.');
+  }
+});
+
+app.get('/admin', (req, res) => {
+  res.send(`Добро пожаловать в админку!`);
+});
   app.use('/api', (req, res, next) => {
     res.set('Cache-Control', 'no-store');
     if (['POST', 'PUT', 'DELETE'].includes(req.method)) {

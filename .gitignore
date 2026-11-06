@@ -5,3 +5,6 @@ coverage/
 test-results/
 *.log
 .DS_Store
+Lab1/.env
+Lab1/nginx/certs
+Lab1/nginx/.htpasswd
